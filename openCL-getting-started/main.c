@@ -9,6 +9,36 @@
 
 #define MAX_SOURCE_SIZE (0x100000)
 
+void PrintDeviceInfo(cl_device_id device)
+{
+  char queryBuffer[1024];
+  int queryInt;
+  cl_int clError;
+  clError = clGetDeviceInfo(device, CL_DEVICE_NAME,
+    sizeof(queryBuffer),
+    &queryBuffer, NULL);
+  printf("CL_DEVICE_NAME: %s\n", queryBuffer);
+  queryBuffer[0] = '\0';
+  clError = clGetDeviceInfo(device, CL_DEVICE_VENDOR,
+    sizeof(queryBuffer), &queryBuffer,
+    NULL);
+  printf("CL_DEVICE_VENDOR: %s\n", queryBuffer);
+  queryBuffer[0] = '\0';
+  clError = clGetDeviceInfo(device, CL_DRIVER_VERSION, 
+    sizeof(queryBuffer), &queryBuffer, 
+    NULL);
+  printf("CL_DRIVER_VERSION: %s\n", queryBuffer);
+  queryBuffer[0] = '\0';
+  clError = clGetDeviceInfo(device, CL_DEVICE_VERSION, 
+    sizeof(queryBuffer), &queryBuffer, 
+    NULL);
+  printf("CL_DEVICE_VERSION: %s\n", queryBuffer);
+  queryBuffer[0] = '\0';
+  clError = clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, 
+    sizeof(int), &queryInt, NULL);
+  printf("CL_DEVICE_MAX_COMPUTE_UNITS: %d\n", queryInt);
+}
+
 int main(void) {
     // Create the two input vectors
     int i;
@@ -42,6 +72,8 @@ int main(void) {
     cl_int ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
     ret = clGetDeviceIDs( platform_id, CL_DEVICE_TYPE_ALL, 1, 
             &device_id, &ret_num_devices);
+
+    PrintDeviceInfo(device_id);
 
     // Create an OpenCL context
     cl_context context = clCreateContext( NULL, 1, &device_id, NULL, NULL, &ret);
@@ -90,8 +122,8 @@ int main(void) {
             LIST_SIZE * sizeof(int), C, 0, NULL, NULL);
 
     // Display the result to the screen
-    for(i = 0; i < LIST_SIZE; i++)
-        printf("%d + %d = %d\n", A[i], B[i], C[i]);
+//     for(i = 0; i < LIST_SIZE; i++)
+//         printf("%d + %d = %d\n", A[i], B[i], C[i]);
 
     // Clean up
     ret = clFlush(command_queue);
